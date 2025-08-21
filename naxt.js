@@ -1,6 +1,8 @@
 class Naxt {
     constructor(root = document.getElementById("app")) {
         this.root = root;
+        this.state = {};
+        this.defaultRender = null;
     }
 
     _construct(type, props = {}, ...children) {
@@ -30,6 +32,11 @@ class Naxt {
         return element;
     }
 
+    setState(partial) {
+        this.state = { ...this.state, ...partial };
+        this.render(this.defaultRender);
+    }
+
     css(content) {
         const style = document.createElement("style");
         style.textContent = content;
@@ -51,6 +58,7 @@ class Naxt {
     };
 
     render(component) {
+        this.defaultRender = component;
         this.root.innerHTML = "";
         this.root.appendChild(component);
     }

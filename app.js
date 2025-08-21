@@ -1,28 +1,22 @@
 import Naxt from "./naxt.js";
 
-const naxt = new Naxt(); // or new Naxt(document.getElementById("app"))
+const naxt = new Naxt();
 
-let state = { counter: 0 };
-
-function setState(partial) {
-    state = { ...state, ...partial };
-    render();
-}
+naxt.state = { counter: 0 };
 
 function App() {
     return naxt.div(
         {},
         naxt.h1({}, "Basic Naxt.js Counter"),
-        naxt.p({}, `Count: ${state.counter}`),
+        naxt.p({}, `Count: ${naxt.state.counter}`),
         naxt.button(
-            { onClick: () => setState({ counter: state.counter + 1 }) },
+            {
+                onClick: () =>
+                    naxt.setState({ counter: naxt.state.counter + 1 }),
+            },
             "Increment"
         )
     );
-}
-
-function render() {
-    naxt.render(App());
 }
 
 naxt.meta.title("Naxt Counter");
@@ -32,4 +26,4 @@ naxt.css(`
   button { padding: .5rem .8rem; border-radius: 6px; border: 0; cursor: pointer; }
 `);
 
-render();
+naxt.render(App());
