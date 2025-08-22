@@ -19,12 +19,22 @@ It showcases how you can build a small SPA (single-page app) with **Home, Docs, 
 ## 📂 Project Structure
 
 .
+
 ├── index.html
+
 ├── styles.css
+
 ├── naxt.js # Naxt framework core (provided separately)
+
 ├── app.js # App shell + layout + router mounting
+
 ├── router.js # Tiny hash router
+
 └── pages/
+
 ├── home.js
+
 ├── docs.js
+
 └── examples.js
+
