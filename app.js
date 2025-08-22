@@ -1,110 +1,148 @@
-import Naxt from "./Naxt.js";
+import Naxt from "./naxt.js";
+import Docs from "./docs.js";
+import Features from "./features.js";
+import Examples from "./examples.js";
 
-const app = new Naxt();
+const naxt = new Naxt();
 
-// Add global CSS
-app.css(`
-  body {
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    margin: 0;
-    padding: 20px;
-  }
-  .container {
-    max-width: 600px;
-    margin: auto;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    padding: 20px;
-  }
-  .task {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-  }
-  .task.done {
-    text-decoration: line-through;
-    color: gray;
-  }
-  .task button {
-    margin-left: 8px;
-  }
-  input {
-    padding: 8px;
-    width: 75%;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-  }
-  button {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 6px;
-    background: #007bff;
-    color: white;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #0056b3;
-  }
-`);
-
-app.state = {
-    tasks: [],
-    newTask: ""
+naxt.globals = {
+    name: "Naxt.js",
 };
 
-function TaskManager(state) {
-    return app.div({ className: "container" },
-        app.h1({}, "Naxt Task Manager ✅"),
+const routes = {
+    "/": (s) => Docs(naxt, s),
+    "/docs": (s) => Docs(naxt, s),
+    "/features": (s) => Features(naxt, s),
+    "/examples": (s) => Examples(naxt, s),
+};
 
-        // Input form
-        app.div({ style: { display: "flex", gap: "10px", marginBottom: "15px" } },
-            app.input({
-                type: "text",
-                placeholder: "Enter a task...",
-                value: state.newTask,
-                oninput: (e) => app.setState({ newTask: e.target.value })
-            }),
-            app.button({
-                onclick: () => {
-                    if (!state.newTask.trim()) return;
-                    const newTask = { id: Date.now(), text: state.newTask, done: false };
-                    app.setState({ tasks: [...state.tasks, newTask], newTask: "" });
-                }
-            }, "Add")
+const THEMES = {
+    light: {
+        "--bg": "#ffffff",
+        "--fg": "#0a0a0a",
+        "--muted": "#f6f6f6",
+        "--border": "#e5e5e5",
+        "--muted-text": "#858585ff",
+    },
+    dark: {
+        "--bg": "#0a0a0a",
+        "--fg": "#ffffff",
+        "--muted": "#1a1a1a",
+        "--border": "#616161ff",
+        "--muted-text": "#aaaaaaff",
+    },
+};
+
+applyTheme(localStorage.getItem("naxt-theme"));
+
+function applyTheme(name) {
+    const vars = THEMES[name] || THEMES.light;
+    Object.entries(vars).forEach(([k, v]) => {
+        document.documentElement.style.setProperty(k, v);
+    });
+}
+
+const pathNow = () => location.hash.replace(/^#/, "") || "/docs";
+const goto = (path) => {
+    if (!path.startsWith("#")) path = "#" + path;
+    if (location.hash !== path) location.hash = path;
+    render();
+};
+
+function ThemeSwitch(naxt) {
+    const current = naxt.state.theme || localStorage.getItem("naxt-theme");
+    const setTheme = (name) => {
+        if (name === current) return;
+        localStorage.setItem("naxt-theme", name);
+        applyTheme(name);
+        naxt.setState({ theme: name });
+    };
+
+    return naxt.div(
+        { className: "seg", role: "group", "aria-label": "Theme" },
+        naxt.button(
+            {
+                className: "seg-btn",
+                "aria-pressed": String(current === "light"),
+                title: "Light theme",
+                onClick: () => setTheme("light"),
+            },
+            "Light"
         ),
+        naxt.button(
+            {
+                className: "seg-btn",
+                "aria-pressed": String(current === "dark"),
+                title: "Dark theme",
+                onClick: () => setTheme("dark"),
+            },
+            "Dark"
+        )
+    );
+}
 
-        // Task list
-        app.ul({},
-            state.tasks.map(task =>
-                app.li({ className: `task ${task.done ? "done" : ""}` },
-                    task.text,
-                    app.div({},
-                        app.button({
-                            onclick: () => {
-                                const updated = state.tasks.map(t =>
-                                    t.id === task.id ? { ...t, done: !t.done } : t
-                                );
-                                app.setState({ tasks: updated });
-                            }
-                        }, task.done ? "Undo" : "Done"),
-                        app.button({
-                            onclick: () => {
-                                const filtered = state.tasks.filter(t => t.id !== task.id);
-                                app.setState({ tasks: filtered });
-                            }
-                        }, "Delete")
-                    )
+function NavLink(href, label) {
+    const isActive = "#" + pathNow() === href;
+    return naxt.a(
+        {
+            href,
+            className: "navlink",
+            "aria-current": isActive ? "page" : "false",
+            onClick: (e) => {
+                e.preventDefault();
+                goto(href);
+            },
+        },
+        label
+    );
+}
+
+function Layout(page) {
+    return naxt.div(
+        {},
+        naxt.nav(
+            { className: "navbar" },
+            naxt.div(
+                { className: "container navbar-inner" },
+                naxt.a(
+                    { href: "#/" },
+                    naxt.div({ className: "brand" }, naxt.globals.name)
+                ),
+                naxt.div(
+                    { className: "navlinks" },
+                    NavLink("#/docs", "Docs"),
+                    NavLink("#/features", "API & Concepts"),
+                    NavLink("#/examples", "Examples"),
+                    ThemeSwitch(naxt)
+                )
+            )
+        ),
+        naxt.div({ className: "container" }, page),
+        naxt.div(
+            { className: "footer container" },
+            naxt.p(
+                {},
+                naxt.a(
+                    { href: "#/" },
+                    `${naxt.globals.name} • ${new Date().getFullYear()}`
                 )
             )
         )
     );
 }
 
-app.meta.title("Naxt Task Manager");
-app.meta.description("A simple task manager built with the Naxt micro-framework.");
+function App(state) {
+    naxt.meta.title("Naxt • Documentation");
+    naxt.meta.description("Official documentation for the Naxt DOM toolkit.");
+    const Page = routes[pathNow()] || routes["/docs"];
+    return Layout(Page(state));
+}
 
-app.render(TaskManager);
+function render() {
+    naxt.render(App);
+}
+window.addEventListener("hashchange", render);
+render();
+
+export { goto };
+export default naxt;
