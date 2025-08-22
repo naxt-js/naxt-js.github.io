@@ -17,7 +17,7 @@ export default function Docs(naxt) {
                     "See Live Examples"
                 ),
                 naxt.a(
-                    { className: "btn btn-outline", href: "#/features" },
+                    { className: "btn btn-outline", href: "#/api-concepts" },
                     "API & Concepts"
                 )
             )
