@@ -12,12 +12,26 @@ class Naxt {
             if (key.startsWith("on") && typeof value === "function") {
                 const event = key.substring(2).toLowerCase();
                 element.addEventListener(event, value);
-            } else if (key === "style" && typeof value === "object") {
+            }
+            else if (key === "style" && typeof value === "object") {
                 Object.assign(element.style, value);
-            } else if (key === "className") {
+            }
+            else if (key === "className") {
                 element.setAttribute("class", value);
-            } else {
-                element[key] = value;
+            }
+            else if (key === "ref" && typeof value === "function") {
+                value(element);
+            }
+            else {
+                try {
+                    if (key in element) {
+                        element[key] = value;
+                    } else {
+                        element.setAttribute(key, value);
+                    }
+                } catch (err) {
+                    console.warn(`Naxt: Could not set property '${key}'`, err);
+                }
             }
         }
 
@@ -59,19 +73,12 @@ class Naxt {
     };
 
     render(componentFn) {
-        // store the function so setState can call it again
         this.defaultRender = componentFn;
-
-        // clear root
         this.root.innerHTML = "";
-
-        // build fresh tree using current state
         const tree = componentFn(this.state);
-
         this.root.appendChild(tree);
     }
 
-    // element helpers
     div(props, ...children) { return this._construct("div", props, ...children); }
     h1(props, ...children) { return this._construct("h1", props, ...children); }
     h2(props, ...children) { return this._construct("h2", props, ...children); }
@@ -81,6 +88,7 @@ class Naxt {
     li(props, ...children) { return this._construct("li", props, ...children); }
     nav(props, ...children) { return this._construct("nav", props, ...children); }
     a(props, ...children) { return this._construct("a", props, ...children); }
+    input(props, ...children) { return this._construct("input", props, ...children); }
 }
 
 export default Naxt;
