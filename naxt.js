@@ -34,7 +34,9 @@ class Naxt {
 
     setState(partial) {
         this.state = { ...this.state, ...partial };
-        this.render(this.defaultRender);
+        if (this.defaultRender) {
+            this.render(this.defaultRender);
+        }
     }
 
     css(content) {
@@ -47,7 +49,6 @@ class Naxt {
         title: (title) => (document.title = title),
         description: (description) => {
             let element = document.querySelector("meta[name='description']");
-
             if (!element) {
                 element = document.createElement("meta");
                 element.name = "description";
@@ -57,39 +58,29 @@ class Naxt {
         },
     };
 
-    render(component) {
-        this.defaultRender = component;
+    render(componentFn) {
+        // store the function so setState can call it again
+        this.defaultRender = componentFn;
+
+        // clear root
         this.root.innerHTML = "";
-        this.root.appendChild(component);
+
+        // build fresh tree using current state
+        const tree = componentFn(this.state);
+
+        this.root.appendChild(tree);
     }
 
-    div(props, ...children) {
-        return this._construct("div", props, ...children);
-    }
-    h1(props, ...children) {
-        return this._construct("h1", props, ...children);
-    }
-    h2(props, ...children) {
-        return this._construct("h2", props, ...children);
-    }
-    p(props, ...children) {
-        return this._construct("p", props, ...children);
-    }
-    button(props, ...children) {
-        return this._construct("button", props, ...children);
-    }
-    ul(props, ...children) {
-        return this._construct("ul", props, ...children);
-    }
-    li(props, ...children) {
-        return this._construct("li", props, ...children);
-    }
-    nav(props, ...children) {
-        return this._construct("nav", props, ...children);
-    }
-    a(props, ...children) {
-        return this._construct("a", props, ...children);
-    }
+    // element helpers
+    div(props, ...children) { return this._construct("div", props, ...children); }
+    h1(props, ...children) { return this._construct("h1", props, ...children); }
+    h2(props, ...children) { return this._construct("h2", props, ...children); }
+    p(props, ...children) { return this._construct("p", props, ...children); }
+    button(props, ...children) { return this._construct("button", props, ...children); }
+    ul(props, ...children) { return this._construct("ul", props, ...children); }
+    li(props, ...children) { return this._construct("li", props, ...children); }
+    nav(props, ...children) { return this._construct("nav", props, ...children); }
+    a(props, ...children) { return this._construct("a", props, ...children); }
 }
 
 export default Naxt;

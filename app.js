@@ -26,4 +26,4 @@ naxt.css(`
   button { padding: .5rem .8rem; border-radius: 6px; border: 0; cursor: pointer; }
 `);
 
-naxt.render(App());
+naxt.render(App);
