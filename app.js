@@ -28,7 +28,7 @@ const THEMES = {
         "--bg": "#0a0a0a",
         "--fg": "#ffffff",
         "--muted": "#1a1a1a",
-        "--border": "#616161ff",
+        "--border": "#282828",
         "--muted-text": "#aaaaaaff",
     },
 };
