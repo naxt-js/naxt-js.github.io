@@ -113,6 +113,7 @@ function Layout(page) {
                     NavLink("#/docs", "Docs"),
                     NavLink("#/features", "API & Concepts"),
                     NavLink("#/examples", "Examples"),
+                    NavLink("https://github.com/naxt-js/", "GitHub"),
                     ThemeSwitch(naxt)
                 )
             )
