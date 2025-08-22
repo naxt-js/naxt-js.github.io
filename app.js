@@ -12,7 +12,7 @@ naxt.globals = {
 const routes = {
     "/": (s) => Docs(naxt, s),
     "/docs": (s) => Docs(naxt, s),
-    "/features": (s) => Features(naxt, s),
+    "/api-concepts": (s) => Features(naxt, s),
     "/examples": (s) => Examples(naxt, s),
 };
 
@@ -111,7 +111,7 @@ function Layout(page) {
                 naxt.div(
                     { className: "navlinks" },
                     NavLink("#/docs", "Docs"),
-                    NavLink("#/features", "API & Concepts"),
+                    NavLink("#/api-concepts", "API & Concepts"),
                     NavLink("#/examples", "Examples"),
                     naxt.a({ href: "https://github.com/naxt-js/", className: "navlink" }, "GitHub"),
                     ThemeSwitch(naxt)
