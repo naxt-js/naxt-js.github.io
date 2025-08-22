@@ -113,7 +113,7 @@ function Layout(page) {
                     NavLink("#/docs", "Docs"),
                     NavLink("#/features", "API & Concepts"),
                     NavLink("#/examples", "Examples"),
-                    naxt.a({ href: "https://github.com/naxt-js/", className: "navlink" }, "GitHub");
+                    naxt.a({ href: "https://github.com/naxt-js/", className: "navlink" }, "GitHub"),
                     ThemeSwitch(naxt)
                 )
             )
