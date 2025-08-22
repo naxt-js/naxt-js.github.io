@@ -1,4 +1,3 @@
-import Naxt from "./naxt.js";
 import Docs from "./docs.js";
 import Features from "./features.js";
 import Examples from "./examples.js";
